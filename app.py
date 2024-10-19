@@ -127,7 +127,9 @@ def get_emotion(analysis, user_query):
     color = emotion_color_map.get(emotion, emotion_color_map["default"])
     # Display the assistant message in the determined color
 
-    st.markdown(f"<p style='color: {color};'>{analysis}</p>", unsafe_allow_html=True)
+    analysis_paragraphs = analysis.split('\n')
+    for paragraph in analysis_paragraphs:
+        st.markdown(f"<p style='color: {color};'>{paragraph}</p>", unsafe_allow_html=True)
 
     return emotion 
 # Function for Google Custom Search API
