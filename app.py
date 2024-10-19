@@ -18,6 +18,8 @@ from pydub import AudioSegment
 from openai import OpenAI
 from streamlit_mic_recorder import speech_to_text
 from cerebras.cloud.sdk import Cerebras
+from streamlit_TTS import auto_play, text_to_speech, text_to_audio
+
 
 # API Keys
 TOGETHER_API_KEY = st.secrets["Together_API"]
@@ -150,13 +152,13 @@ def extract_article_content(url):
         print(f"Error extracting article content: {e}")
         return None
 
-# Convert text to audio
-def text_to_audio(text, lang='en'):
-    tts = gTTS(text=text, lang=lang)
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
-        audio_file_path = fp.name
-        tts.save(audio_file_path)
-    return audio_file_path
+# # Convert text to audio
+# def text_to_audio(text, lang='en'):
+#     tts = gTTS(text=text, lang=lang)
+#     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as fp:
+#         audio_file_path = fp.name
+#         tts.save(audio_file_path)
+#     return audio_file_path
 
 # Play audio using sounddevice
 def play_audio(file_path):
@@ -232,7 +234,7 @@ def main():
                     
 
                     audio_file = text_to_audio(analysis)
-                    st.audio(audio_file, format='audio/mp3')
+                    auto_play(audio_file)
 
                     user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
                     if user_response:
@@ -273,7 +275,7 @@ def main():
                     get_emotion(analysis, email_text)
 
                     audio_file = text_to_audio(analysis)
-                    st.audio(audio_file, format='audio/mp3')
+                    auto_play(audio_file)
 
                     user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
                     if user_response:
@@ -308,7 +310,7 @@ def main():
                     st.write(analysis)
 
                     audio_file = text_to_audio(analysis)
-                    st.audio(audio_file, format='audio/mp3')
+                    auto_play(audio_file)
 
                     user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
                     if user_response:
@@ -358,7 +360,7 @@ def main():
                     get_emotion(analysis, audio_input)
 
                     audio_file = text_to_audio(analysis)
-                    st.audio(audio_file, format='audio/mp3')
+                    auto_play(audio_file)
 
                     user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
                     if user_response:
