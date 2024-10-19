@@ -112,3 +112,5 @@ whisper==1.1.10
 xyzservices==2024.9.0
 yarl==1.15.4
 cerebras_cloud_sdk
+streamlit-TTS
+python-dotenv
