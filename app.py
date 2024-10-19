@@ -89,7 +89,15 @@ def ai_analysis(text, predicted_emotion):
         return full_response or "No analysis content returned."
     except Exception as e:
         print(f"Error in AI analysis: {str(e)}")
-        return "Could not complete the analysis due to an error."
+        try: 
+            response = cerebras_client.chat.completions.create(model="llama3.1-70b",
+                    messages=[{"role": "system", "content": "You are an AI assistant analyzing emotional tone."},
+                      {"role": "user", "content": prompt},
+                      {"role": "user", "content": text}],)
+            return response.choices[0].message.content
+        except Exception as e:
+            print(f"Error in AI analysis: {str(e)}")
+            return "Could not complete the analysis due to an error."
 
 def get_emotion(analysis, user_query):
     emotion_color_map = {
