@@ -144,7 +144,7 @@ def main():
             }
             </style>""", unsafe_allow_html=True)
 
-    option = st.sidebar.selectbox("Choose input type", ["Text Input", "Email Input", "Article URL", "Google Search", "Audio Input"])
+    option = st.sidebar.selectbox("Choose input type", ["Audio Input", "Text Input", "Email Input", "Article URL", "Google Search"])
 
     st.sidebar.write("### Instructions")
     st.sidebar.write("""\
