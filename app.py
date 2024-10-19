@@ -338,6 +338,7 @@ def main():
         
         if st.button("Analyze Audio"):
             if audio_input:
+                st.write(audio_input)
                 st.session_state.last_input_time = time.time()
                 with st.spinner("Analyzing..."):
                     prediction = predict_emotions(audio_input)
