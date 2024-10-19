@@ -13,9 +13,9 @@ from gtts import gTTS
 import tempfile
 
 # API Keys
-TOGETHER_API_KEY = ""
-GOOGLE_API_KEY = ""
-GOOGLE_CX = ""
+TOGETHER_API_KEY = st.secrets["Together_API"]
+GOOGLE_API_KEY = st.secrets["Google_API"]
+GOOGLE_CX = st.secrets["Google_CX"]
 
 # Set Together API key
 os.environ["TOGETHER_API_KEY"] = TOGETHER_API_KEY
