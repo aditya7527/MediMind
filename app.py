@@ -173,6 +173,10 @@ def play_audio(file_path):
 def detect_language(text):
     return detect(text)
 
+def callback():
+    if st.session_state.my_stt_output:
+        st.write(st.session_state.my_stt_output)
+
 # Main App
 def main():
     st.set_page_config(page_title="Emotion Detection App", layout="wide")
@@ -334,11 +338,10 @@ def main():
 
     elif option == "Audio Input":
         st.subheader("🎤 Emotion Detection from Audio Input")
-        audio_input = speech_to_text()
+        audio_input = speech_to_text(key='my_stt', callback=callback)
         
         if st.button("Analyze Audio"):
             if audio_input:
-                st.write(audio_input)
                 st.session_state.last_input_time = time.time()
                 with st.spinner("Analyzing..."):
                     prediction = predict_emotions(audio_input)
