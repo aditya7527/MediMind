@@ -16,7 +16,6 @@ import tempfile
 TOGETHER_API_KEY = st.secrets["Together_API"]
 GOOGLE_API_KEY = st.secrets["Google_API"]
 GOOGLE_CX = st.secrets["Google_CX"]
-SERPER_API_KEY = st.secrets["Serper_API"] # Replace with your Serper API key
 
 # Set Together API key
 os.environ["TOGETHER_API_KEY"] = TOGETHER_API_KEY
@@ -79,27 +78,11 @@ def ai_analysis(text, predicted_emotion):
         print(f"Error in AI analysis: {str(e)}")
         return "Could not complete the analysis due to an error."
 
-# Function to search articles using Serper API
-def serper_search(query):
-    url = "https://api.serper.dev/search"  # Use the correct Serper API URL
-    headers = {
-        "Authorization": f"Bearer {SERPER_API_KEY}",
-        "Content-Type": "application/json",
-    }
-    params = {
-        "q": query,
-        "hl": "en",
-        "gl": "us"
-    }
-    
-    try:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()  # Raises an error for bad responses
-        data = response.json()
-        return data.get('organic_results', [])  # Assuming the results are in this key
-    except Exception as e:
-        print(f"Error in Serper search: {e}")
-        return []
+# Function for Google Custom Search API
+def google_search(query):
+    service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
+    result = service.cse().list(q=query, cx=GOOGLE_CX).execute()
+    return result.get('items', [])
 
 # Scraping article content from a URL
 def extract_article_content(url):
@@ -224,16 +207,14 @@ def main():
         st.subheader("📧 Emotion Detection from Email")
         email_text = st.text_area("Paste your email content here:", height=150)
         if st.button("Analyze Email Emotions"):
-            st.session_state.last_input_time = current_time  # Update the last input time
+            st.session_state.last_input_time = current_time
             with st.spinner("Analyzing..."):
                 if email_text:
-                    # Emotion prediction
                     prediction = predict_emotions(email_text)
                     probability = get_prediction_proba(email_text)
                     st.success(f"**Predicted Emotion:** {prediction} {emotions_emoji_dict[prediction]}")
                     st.write(f"**Prediction Confidence:** {np.max(probability):.2f}")
 
-                    # Plot probabilities
                     proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
                     proba_df_clean = proba_df.T.reset_index()
                     proba_df_clean.columns = ["emotions", "probability"]
@@ -244,24 +225,19 @@ def main():
                     ).properties(title="Emotion Probabilities")
                     st.altair_chart(fig, use_container_width=True)
 
-                    # AI Analysis with emotion input
                     analysis = ai_analysis(email_text, prediction)
                     st.write("### AI Analysis:")
                     st.write(analysis)
 
-                    # Convert text to audio
                     audio_file = text_to_audio(analysis)
                     st.audio(audio_file, format='audio/mp3')
 
-                    # Input for user response
                     user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
-                    if user_response:  # Check if the user has provided input
-                        # Get empathetic response from AI
+                    if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
                         st.write(empathetic_response)
 
-                    # Download button
                     st.download_button(
                         "📥 Download Results as CSV", 
                         proba_df_clean.to_csv(index=False), 
@@ -269,145 +245,69 @@ def main():
                         "text/csv"
                     )
 
-                    # Check response speed and provide empathetic messages
-                    if response_time > 10:  # Change threshold as needed
-                        st.warning("Are you okay? Take your time.")
-                    elif response_time < 5:  # Change threshold as needed
-                        st.success("Oh, you seem happy! 😊")
-
     elif option == "Article URL":
-        st.subheader("📰 Emotion Detection from Article")
-        article_url = st.text_input("Enter the article URL:")
-        if st.button("Extract and Analyze Article"):
-            st.session_state.last_input_time = current_time  # Update the last input time
-            with st.spinner("Extracting article..."):
-                if article_url:
-                    # Extract article content
-                    article_content = extract_article_content(article_url)
-                    if article_content:
-                        # Emotion prediction
-                        prediction = predict_emotions(article_content)
-                        probability = get_prediction_proba(article_content)
-                        st.success(f"**Predicted Emotion:** {prediction} {emotions_emoji_dict[prediction]}")
-                        st.write(f"**Prediction Confidence:** {np.max(probability):.2f}")
+        st.subheader("📰 Emotion Detection from Article URL")
+        article_url = st.text_input("Enter the URL of the article:")
+        if st.button("Fetch Article"):
+            st.session_state.last_input_time = current_time
+            with st.spinner("Fetching article..."):
+                article_content = extract_article_content(article_url)
+                if article_content:
+                    st.write("### Article Content:")
+                    st.write(article_content)
 
-                        # Plot probabilities
-                        proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
-                        proba_df_clean = proba_df.T.reset_index()
-                        proba_df_clean.columns = ["emotions", "probability"]
-                        fig = alt.Chart(proba_df_clean).mark_bar().encode(
-                            x='emotions',
-                            y='probability',
-                            color='emotions'
-                        ).properties(title="Emotion Probabilities")
-                        st.altair_chart(fig, use_container_width=True)
+                    prediction = predict_emotions(article_content)
+                    probability = get_prediction_proba(article_content)
+                    st.success(f"**Predicted Emotion:** {prediction} {emotions_emoji_dict[prediction]}")
+                    st.write(f"**Prediction Confidence:** {np.max(probability):.2f}")
 
-                        # AI Analysis with emotion input
-                        analysis = ai_analysis(article_content, prediction)
-                        st.write("### AI Analysis:")
-                        st.write(analysis)
+                    proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
+                    proba_df_clean = proba_df.T.reset_index()
+                    proba_df_clean.columns = ["emotions", "probability"]
+                    fig = alt.Chart(proba_df_clean).mark_bar().encode(
+                        x='emotions',
+                        y='probability',
+                        color='emotions'
+                    ).properties(title="Emotion Probabilities")
+                    st.altair_chart(fig, use_container_width=True)
 
-                        # Convert text to audio
-                        audio_file = text_to_audio(analysis)
-                        st.audio(audio_file, format='audio/mp3')
+                    analysis = ai_analysis(article_content, prediction)
+                    st.write("### AI Analysis:")
+                    st.write(analysis)
 
-                        # Input for user response
-                        user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
-                        if user_response:  # Check if the user has provided input
-                            # Get empathetic response from AI
-                            empathetic_response = ai_analysis(user_response, prediction)
-                            st.write("### AI Empathetic Response:")
-                            st.write(empathetic_response)
+                    audio_file = text_to_audio(analysis)
+                    st.audio(audio_file, format='audio/mp3')
 
-                        # Download button
-                        st.download_button(
-                            "📥 Download Results as CSV", 
-                            proba_df_clean.to_csv(index=False), 
-                            "emotion_probabilities.csv", 
-                            "text/csv"
-                        )
+                    user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
+                    if user_response:
+                        empathetic_response = ai_analysis(user_response, prediction)
+                        st.write("### AI Empathetic Response:")
+                        st.write(empathetic_response)
 
-                        # Check response speed and provide empathetic messages
-                        if response_time > 10:  # Change threshold as needed
-                            st.warning("Are you okay? Take your time.")
-                        elif response_time < 5:  # Change threshold as needed
-                            st.success("Oh, you seem happy! 😊")
-                    else:
-                        st.error("Could not extract content from the provided URL.")
+                    st.download_button(
+                        "📥 Download Results as CSV", 
+                        proba_df_clean.to_csv(index=False), 
+                        "emotion_probabilities.csv", 
+                        "text/csv"
+                    )
+                else:
+                    st.error("Could not extract content from the provided URL.")
 
     elif option == "Google Search":
-        st.subheader("🔍 Emotion Detection from Google Search")
+        st.subheader("🔍 Google Search for Articles")
         search_query = st.text_input("Enter your search query:")
         if st.button("Search Articles"):
-            st.session_state.last_input_time = current_time  # Update the last input time
+            st.session_state.last_input_time = current_time
             with st.spinner("Searching..."):
-                if search_query:
-                    # Search articles using Serper API
-                    search_results = serper_search(search_query)
-                    if search_results:
-                        # Display search results
-                        st.write("### Search Results:")
-                        for result in search_results:
-                            st.write(f"**Title:** {result.get('title')}")
-                            st.write(f"**Snippet:** {result.get('snippet')}")
-                            st.write(f"**URL:** [Read More]({result.get('link')})")
-
-                            # Button to analyze the article
-                            if st.button(f"Analyze {result.get('title')}"):
-                                article_content = extract_article_content(result.get('link'))
-                                if article_content:
-                                    # Emotion prediction
-                                    prediction = predict_emotions(article_content)
-                                    probability = get_prediction_proba(article_content)
-                                    st.success(f"**Predicted Emotion:** {prediction} {emotions_emoji_dict[prediction]}")
-                                    st.write(f"**Prediction Confidence:** {np.max(probability):.2f}")
-
-                                    # Plot probabilities
-                                    proba_df = pd.DataFrame(probability, columns=pipe_lr.classes_)
-                                    proba_df_clean = proba_df.T.reset_index()
-                                    proba_df_clean.columns = ["emotions", "probability"]
-                                    fig = alt.Chart(proba_df_clean).mark_bar().encode(
-                                        x='emotions',
-                                        y='probability',
-                                        color='emotions'
-                                    ).properties(title="Emotion Probabilities")
-                                    st.altair_chart(fig, use_container_width=True)
-
-                                    # AI Analysis with emotion input
-                                    analysis = ai_analysis(article_content, prediction)
-                                    st.write("### AI Analysis:")
-                                    st.write(analysis)
-
-                                    # Convert text to audio
-                                    audio_file = text_to_audio(analysis)
-                                    st.audio(audio_file, format='audio/mp3')
-
-                                    # Input for user response
-                                    user_response = st.text_input("🤔 How do you feel about this analysis? What would you like to discuss?", "")
-                                    if user_response:  # Check if the user has provided input
-                                        # Get empathetic response from AI
-                                        empathetic_response = ai_analysis(user_response, prediction)
-                                        st.write("### AI Empathetic Response:")
-                                        st.write(empathetic_response)
-
-                                    # Download button
-                                    st.download_button(
-                                        "📥 Download Results as CSV", 
-                                        proba_df_clean.to_csv(index=False), 
-                                        "emotion_probabilities.csv", 
-                                        "text/csv"
-                                    )
-
-                                    # Check response speed and provide empathetic messages
-                                    if response_time > 10:  # Change threshold as needed
-                                        st.warning("Are you okay? Take your time.")
-                                    elif response_time < 5:  # Change threshold as needed
-                                        st.success("Oh, you seem happy! 😊")
-                                else:
-                                    st.error("Could not extract content from the article.")
-
-                    else:
-                        st.error("No results found for your search query.")
+                search_results = google_search(search_query)
+                if search_results:
+                    for item in search_results:
+                        st.write(f"### [{item['title']}]({item['link']})")
+                        st.write(f"{item['snippet']}")
+                        st.write("---")
+                    st.success("Found articles! Click on the titles to view.")
+                else:
+                    st.error("No articles found for your search query.")
 
 if __name__ == "__main__":
     main()
