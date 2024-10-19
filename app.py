@@ -17,25 +17,30 @@ import numpy as np
 from pydub import AudioSegment
 from openai import OpenAI
 from streamlit_mic_recorder import speech_to_text
+from cerebras.cloud.sdk import Cerebras
 
 # API Keys
 TOGETHER_API_KEY = st.secrets["Together_API"]
 GOOGLE_API_KEY = st.secrets["Google_API"]
 GOOGLE_CX = st.secrets["Google_CX"]
 OPENAI_API_KEY = st.secrets["Open_API"]
-
+CEREBRAS_API_KEY = st.secrets["CEREBRAS_API_KEY"]
 # Set Together API key
 os.environ["TOGETHER_API_KEY"] = TOGETHER_API_KEY
 
 # Initialize Together AI client
 together_client = Together(api_key=TOGETHER_API_KEY)
-
+if not CEREBRAS_API_KEY: 
+    CEREBRAS_API_KEY = os.getenv("CEREBRAS_API_KEY")
 # Initialize OpenAI client
 client = OpenAI(
     api_key=OPENAI_API_KEY,
     base_url="https://api.aimlapi.com",
 )
 
+cerebras_client = Cerebras(
+    api_key=CEREBRAS_API_KEY
+)
 # Load emotion detection model
 pipe_lr = joblib.load(open("model/text_emotion.pkl", "rb"))
 
@@ -86,6 +91,37 @@ def ai_analysis(text, predicted_emotion):
         print(f"Error in AI analysis: {str(e)}")
         return "Could not complete the analysis due to an error."
 
+def get_emotion(analysis, user_query):
+    emotion_color_map = {
+        "calm": "#A7C7E7",
+        "trust": "#A7C7E7",
+        "serenity": "#A7C7E7",
+        "balance": "#C8E6C9",
+        "harmony": "#C8E6C9",
+        "nature": "#C8E6C9",
+        "soothe": "#E1BEE7",
+        "relaxation": "#E1BEE7",
+        "care": "#F8BBD0",
+        "compassion": "#F8BBD0",
+        "warmth": "#F8BBD0",
+        "simplicity": "#D7CCC8",
+        "depressed": "#A7C7E7",  # Blue for depression
+        "default": "#A7C7E7"  # Default color is blue
+    }
+    
+
+    # Determine the color based on the emotion
+    emotion_extraction_prompt = f"from above conversation history you have to extract teh emotion of user you have to give output as one of the {emotion_color_map.keys()} don't write any additional text and any code. given assistant repsonse:{analysis} user_query: {user_query}"
+
+
+    emotion = cerebras_client.chat.completions.create(model="llama3.1-8b", messages = [{"role": "user", "content": emotion_extraction_prompt}])
+    emotion = emotion.choices[0].message.content
+    color = emotion_color_map.get(emotion, emotion_color_map["default"])
+    # Display the assistant message in the determined color
+
+    st.markdown(f"<p style='color: {color};'>{analysis}</p>", unsafe_allow_html=True)
+
+    return emotion 
 # Function for Google Custom Search API
 def google_search(query):
     service = build("customsearch", "v1", developerKey=GOOGLE_API_KEY)
@@ -182,7 +218,8 @@ def main():
 
                     analysis = ai_analysis(raw_text, prediction)
                     st.write("### AI Analysis:")
-                    st.write(analysis)
+                    get_emotion(analysis,raw_text)
+                    
 
                     audio_file = text_to_audio(analysis)
                     st.audio(audio_file, format='audio/mp3')
@@ -191,7 +228,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        st.write(empathetic_response)
+                        get_emotion(empathetic_response,user_response)
 
                     st.download_button(
                         "📥 Download Results as CSV", 
@@ -223,7 +260,7 @@ def main():
 
                     analysis = ai_analysis(email_text, prediction)
                     st.write("### AI Analysis:")
-                    st.write(analysis)
+                    get_emotion(analysis, email_text)
 
                     audio_file = text_to_audio(analysis)
                     st.audio(audio_file, format='audio/mp3')
@@ -232,7 +269,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        st.write(empathetic_response)
+                        get_emotion(empathetic_response, user_response)
 
     elif option == "Article URL":
         st.subheader("📄 Emotion Detection from Article URL")
@@ -308,7 +345,7 @@ def main():
 
                     analysis = ai_analysis(audio_input, prediction)
                     st.write("### AI Analysis:")
-                    st.write(analysis)
+                    get_emotion(analysis, audio_input)
 
                     audio_file = text_to_audio(analysis)
                     st.audio(audio_file, format='audio/mp3')
@@ -317,7 +354,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        st.write(empathetic_response)
+                        get_emotion(empathetic_response, user_response)
 
 if __name__ == "__main__":
     main()
