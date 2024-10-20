@@ -51,11 +51,25 @@ pipe_lr = joblib.load(open("model/text_emotion.pkl", "rb"))
 
 # Emojis for different emotions
 emotions_emoji_dict = {
-    "anger": "😠", "disgust": "🤮", "fear": "😨😱", 
-    "happy": "🤗", "joy": "😂", "neutral": "😐", 
-    "sad": "😔", "sadness": "😔", "shame": "😳", 
-    "surprise": "😮"
+    "anger": "😠", 
+    "disgust": "🤮", 
+    "fear": "😨😱", 
+    "happy": "🤗", 
+    "joy": "😂", 
+    "neutral": "😐", 
+    "sad": "😔", 
+    "sadness": "😔", 
+    "shame": "😳", 
+    "surprise": "😮", 
+    "love": "❤️", 
+    "grief": "😢", 
+    "anxiety": "😰", 
+    "hope": "🌈", 
+    "determination": "💪", 
+    "frustration": "😩", 
+    "confusion": "😕"
 }
+
 
 # Functions for emotion detection
 def predict_emotions(docx):
@@ -69,7 +83,7 @@ def get_prediction_proba(docx):
 def ai_analysis(text, predicted_emotion):
     try:
         prompt = f"You are an AI assistant that provides detailed emotional analysis based on user input. The user text reflects a tone of '{predicted_emotion}'. " \
-                 "Please offer a thoughtful analysis of the emotions, considering the detected tone, and give suggestions on how the user might feel or act next."
+                 "Please offer a thoughtful analysis of the emotions, considering the detected tone, and give suggestions on how the user might feel or act next and also show different happy emojis if user is happy or feeling joy otherwise show sad emojis when user is sad or feeling some kind of fear."
 
         response = together_client.chat.completions.create(
             model="meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
