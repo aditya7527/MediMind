@@ -234,8 +234,7 @@ def main():
 
                     analysis = ai_analysis(raw_text, prediction)
                     st.write("### AI Analysis:")
-                    get_emotion(analysis,raw_text)
-                    
+                    st.markdown(f'<div style="color:black;">{analysis}</div>', unsafe_allow_html=True)
 
                     audio_file = text_to_audio(analysis)
                     auto_play(audio_file)
@@ -244,7 +243,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        get_emotion(empathetic_response,user_response)
+                        st.markdown(f'<div style="color:black;">{empathetic_response}</div>', unsafe_allow_html=True)
 
                     st.download_button(
                         "📥 Download Results as CSV", 
@@ -276,7 +275,7 @@ def main():
 
                     analysis = ai_analysis(email_text, prediction)
                     st.write("### AI Analysis:")
-                    get_emotion(analysis, email_text)
+                    st.markdown(f'<div style="color:black;">{analysis}</div>', unsafe_allow_html=True)
 
                     audio_file = text_to_audio(analysis)
                     auto_play(audio_file)
@@ -285,7 +284,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        get_emotion(empathetic_response, user_response)
+                        st.markdown(f'<div style="color:black;">{empathetic_response}</div>', unsafe_allow_html=True)
 
     elif option == "Article URL":
         st.subheader("📄 Emotion Detection from Article URL")
@@ -311,7 +310,7 @@ def main():
 
                     analysis = ai_analysis(article_content, prediction)
                     st.write("### AI Analysis:")
-                    st.write(analysis)
+                    st.markdown(f'<div style="color:black;">{analysis}</div>', unsafe_allow_html=True)
 
                     audio_file = text_to_audio(analysis)
                     auto_play(audio_file)
@@ -320,7 +319,7 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        st.write(empathetic_response)
+                        st.markdown(f'<div style="color:black;">{empathetic_response}</div>', unsafe_allow_html=True)
 
     elif option == "Google Search":
         st.subheader("🔍 Google Search for Emotion Detection")
@@ -361,7 +360,7 @@ def main():
 
                     analysis = ai_analysis(audio_input, prediction)
                     st.write("### AI Analysis:")
-                    get_emotion(analysis, audio_input)
+                    st.markdown(f'<div style="color:black;">{analysis}</div>', unsafe_allow_html=True)
 
                     audio_file = text_to_audio(analysis)
                     auto_play(audio_file)
@@ -370,7 +369,8 @@ def main():
                     if user_response:
                         empathetic_response = ai_analysis(user_response, prediction)
                         st.write("### AI Empathetic Response:")
-                        get_emotion(empathetic_response, user_response)
+                        st.markdown(f'<div style="color:black;">{empathetic_response}</div>', unsafe_allow_html=True)
+
 
 if __name__ == "__main__":
     main()
