@@ -66,7 +66,7 @@ def get_prediction_proba(docx):
     results = pipe_lr.predict_proba([docx])
     return results
 
-:def ai_analysis(text, predicted_emotion):
+def ai_analysis(text, predicted_emotion):
     try:
         prompt = f"You are an AI assistant that provides detailed emotional analysis based on user input. The user text reflects a tone of '{predicted_emotion}'. " \
                  "Please offer a thoughtful analysis of the emotions, considering the detected tone, and give suggestions on how the user might feel or act next."
