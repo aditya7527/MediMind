@@ -104,20 +104,20 @@ def ai_analysis(text, predicted_emotion):
 
 def get_emotion(analysis, user_query):
     emotion_color_map = {
-        "calm": "#A7C7E7",
-        "trust": "#A7C7E7",
-        "serenity": "#A7C7E7",
-        "balance": "#C8E6C9",
-        "harmony": "#C8E6C9",
-        "nature": "#C8E6C9",
-        "soothe": "#E1BEE7",
-        "relaxation": "#E1BEE7",
-        "care": "#F8BBD0",
-        "compassion": "#F8BBD0",
-        "warmth": "#F8BBD0",
-        "simplicity": "#D7CCC8",
-        "depressed": "#A7C7E7",  # Blue for depression
-        "default": "#A7C7E7"  # Default color is blue
+       "calm": "#005073",  # Dark blue for calmness
+        "trust": "#005073",  # Dark blue for trust
+        "serenity": "#0073e6",  # Bright blue for serenity
+        "balance": "#73a942",  # Green for balance
+        "harmony": "#73a942",  # Green for harmony
+        "nature": "#73a942",  # Green for nature
+        "soothe": "#a64ca6",  # Purple for soothing
+        "relaxation": "#a64ca6",  # Purple for relaxation
+        "care": "#ff6f61",  # Soft red for care
+        "compassion": "#ff6f61",  # Soft red for compassion
+        "warmth": "#ff6f61",  # Soft red for warmth
+        "simplicity": "#8c8c8c",  # Grey for simplicity
+        "depressed": "#005073",  # Dark blue for depression
+        "default": "#005073"  # Default color is dark blue
     }
     
 
