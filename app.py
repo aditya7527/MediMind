@@ -68,14 +68,23 @@ def get_prediction_proba(docx):
 
 def ai_analysis(text, predicted_emotion):
     try:
-        prompt = f"You are an AI assistant that provides detailed emotional analysis based on user input. The user text reflects a tone of '{predicted_emotion}'. " \
-                 "Please offer a thoughtful analysis of the emotions, considering the detected tone, and give suggestions on how the user might feel or act next."
+        # Create a prompt with detailed emotional analysis instructions
+        prompt = (
+            f"You are an AI assistant that provides detailed emotional analysis based on user input. "
+            f"The user text reflects a tone of '{predicted_emotion}'. "
+            "Please offer a thoughtful analysis of the emotions, considering the detected tone. "
+            "If the tone is happy, add one or two relevant emojis in your response. "
+            "If the tone is sad or negative, provide a comforting response without any emojis. "
+            "Suggest how the user might feel or act next."
+        )
 
         response = together_client.chat.completions.create(
             model="meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
-            messages=[{"role": "system", "content": "You are an AI assistant analyzing emotional tone."},
-                      {"role": "user", "content": prompt},
-                      {"role": "user", "content": text}],
+            messages=[
+                {"role": "system", "content": "You are an AI assistant analyzing emotional tone."},
+                {"role": "user", "content": prompt},
+                {"role": "user", "content": text}
+            ],
             max_tokens=500,
             temperature=0.7,
             top_p=0.7,
@@ -94,15 +103,20 @@ def ai_analysis(text, predicted_emotion):
         return full_response or "No analysis content returned."
     except Exception as e:
         print(f"Error in AI analysis: {str(e)}")
-        try: 
-            response = cerebras_client.chat.completions.create(model="llama3.1-70b",
-                    messages=[{"role": "system", "content": "You are an AI assistant analyzing emotional tone."},
-                      {"role": "user", "content": prompt},
-                      {"role": "user", "content": text}],)
+        try:
+            response = cerebras_client.chat.completions.create(
+                model="llama3.1-70b",
+                messages=[
+                    {"role": "system", "content": "You are an AI assistant analyzing emotional tone."},
+                    {"role": "user", "content": prompt},
+                    {"role": "user", "content": text}
+                ]
+            )
             return response.choices[0].message.content
         except Exception as e:
             print(f"Error in AI analysis: {str(e)}")
             return "Could not complete the analysis due to an error."
+
 
 def get_emotion(analysis, user_query):
     emotion_color_map = {
