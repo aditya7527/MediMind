@@ -82,8 +82,14 @@ def get_prediction_proba(docx):
 
 def ai_analysis(text, predicted_emotion):
     try:
-        prompt = f"You are an AI assistant that provides detailed emotional analysis based on user input. The user text reflects a tone of '{predicted_emotion}'. " \
-                 "Please offer a thoughtful analysis of the emotions, considering the detected tone, and give suggestions on how the user might feel or act next and also show different happy emojis if user is happy or feeling joy otherwise show sad emojis when user is sad or feeling some kind of fear."
+        prompt = (
+            f"You are an AI assistant tasked with providing an in-depth emotional analysis based on user input. "
+            f"The text provided by the user conveys a tone of '{predicted_emotion}'. "
+            "Please deliver a thoughtful analysis of the emotions reflected in the text, taking into account the identified tone. "
+            "Also, suggest how the user might feel or behave moving forward. "
+            "If the user expresses feelings of happiness or joy, include a variety of happy emojis (e.g., 😃, 🥳, 🌞). "
+            "Conversely, if the user shows signs of sadness, fear, or anxiety, provide relevant sad or fearful emojis (e.g., 😓, 😞, 😱)."
+        )
 
         response = together_client.chat.completions.create(
             model="meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo",
