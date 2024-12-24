@@ -1,8 +1,56 @@
-# 🧠 Advanced Text Emotion Detection & Summarization App
+# **FEELBETTER BUDDY TEAM**
+
+<hr/>
+<table>
+    <tbody>
+        <tr>
+            <td align="center">
+                <a href="https://github.com/HassanMehmood413">
+                    <img src="https://avatars.githubusercontent.com/u/170643017?s=400&u=3b631b0e7ee1d167615824d1037ec0de89d89d3b&v=4" width="100px;" alt="Hassan Mehmood"/>
+                    <br />
+                    <sub><b>Hassan Mehmood</b></sub>
+                </a> 
+            </td>
+          <td align="center">
+                <a href="https://github.com/someshfengde">
+                    <img src="https://avatars.githubusercontent.com/u/42097653?v=4" width="100px;" alt="Somesh Fengde"/>
+                    <br />
+                    <sub><b>Somesh Fengde</b></sub>
+                </a> 
+            </td>
+            <td align="center">
+                <a href="https://github.com/Sanarazaaa">
+                    <img src="https://avatars.githubusercontent.com/u/165957167?v=4" width="100px;" alt="Sana Raza"/>
+                    <br />
+                    <sub><b>Sana Raza</b></sub>
+                </a> 
+            </td>
+            <td align="center">
+                <a href="https://github.com/ashleysally00">
+                    <img src="https://avatars.githubusercontent.com/u/74416365?v=4" width="100px;" alt="Okey Amy"/>
+                    <br />
+                    <sub><b>Ashley Sally</b></sub>
+                </a> 
+            </td>
+          <td align="center">
+                <a href="https://github.com/hanzlikhan">
+                    <img src="https://avatars.githubusercontent.com/u/146532605?v=4" width="100px;" alt="Muhammad Hanzla"/>
+                    <br />
+                    <sub><b>Muhammad Hanzla</b></sub>
+                </a> 
+            </td>
+        </tr> 
+</tbody>
+<table>
+<hr/>
+
+
+
+# 🧠 FEELBETTER BUDDY
 
 ## Overview
 
-The **Emotion Detection & Summarization App** is a powerful web application built with Streamlit that enables users to analyze the emotional tone of text, emails, articles, and audio inputs. The app utilizes various AI models to provide detailed emotional analysis and generate empathetic responses, making it an excellent tool for understanding emotional contexts in communication.
+The **FEELBETTER BUDDY TEAM** is a powerful web application built with Streamlit that enables users to analyze the emotional tone of text, emails, articles, and audio inputs. The app utilizes various AI models to provide detailed emotional analysis and generate empathetic responses, making it an excellent tool for understanding emotional contexts in communication.
 
 ### Features
 
