@@ -1,6 +1,0 @@
-[theme]
-primaryColor = "#ffddb5"         # Light peach color
-backgroundColor = "#90d5ff"      # Light blue background
-secondaryBackgroundColor = "#ffffff"  # White for cards/sections
-textColor = "#000000"            # Black for accessibility
-font = "sans serif"
